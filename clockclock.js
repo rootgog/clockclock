@@ -10,8 +10,13 @@ export default class ClockClock {
 
     // seg.set("111101101101111"); //0
     // seg.set("110010010010111"); //1
+    // seg.set("111001111100111"); //2
+    // seg.set("111001111001111"); //3
+    // seg.set("101101111001001"); //4
     // seg.set("111100111001111"); //5
-    seg.set("111101111101111"); //8
+    // seg.set("111100111101111"); //6
+    // seg.set("111101001001001"); //7
+    // seg.set("111101111101111"); //8
     // seg.set("111101111001111"); //9
 
     seg.draw(this.ctx);
@@ -69,72 +74,40 @@ class Segment {
           const RIGHT = 90;
           const LEFT = 270;
 
-          //to left or down change dial 2 (index 1)
-          //to up or right change dial 1 (index 0)
-          const LEFT_DOWN = 1;
-          const RIGHT_UP = 0;
+          const DIAL_1 = 1;
+          const DIAL_2 = 0;
 
-          if (
-            arr[y + 1] == undefined ||
-            (arr[y + 1] != undefined && arr[y + 1][x] == "0")
-          ) {
-            //bottom
-            bottomleft.dials[RIGHT_UP] = RIGHT;
-            bottomright.dials[LEFT_DOWN] = LEFT;
-
-            //corners
-            if (x == 0) {
-              //bottom left
-              bottomleft.dials[LEFT_DOWN] = RIGHT;
-            }
+          function isZeroVal(x, y) {
+            if (arr[y] == undefined) return true;
+            if (arr[y][x] != "1") return true;
           }
 
-          if (arr[y][x + 1] == undefined || arr[y][x + 1] == "0") {
-            //right
-            topright.dials[LEFT_DOWN] = DOWN;
-            bottomright.dials[RIGHT_UP] = UP;
+          const zeroAbove = isZeroVal(x, y - 1);
+          const zeroBelow = isZeroVal(x, y + 1);
+          const zeroRight = isZeroVal(x + 1, y);
+          const zeroLeft = isZeroVal(x - 1, y);
 
-            //corners
-            if (y == 0) {
-              //top left
-              topright.dials[RIGHT_UP] = LEFT;
-            }
+          if (zeroRight) {
+            //zero to right
+            topright.dials[DIAL_2] = DOWN;
+            bottomright.dials[DIAL_1] = UP;
           }
-          if (y == 0 || (arr[y - 1] != undefined && arr[y - 1][x] == "0")) {
-            //top
-            topleft.dials[RIGHT_UP] = RIGHT;
-            topright.dials[LEFT_DOWN] = LEFT;
-
-            //corners
-            if (y != 0 && arr[y - 1][x] == "0") {
-              //top left
-
-              if (arr[y - 1][x - 1] != "0") {
-                topleft.dials[LEFT_DOWN] = UP;
-              }
-              if (arr[y - 1][x + 1] != "0" && arr[y][x + 1] != "1") {
-                topright.dials[RIGHT_UP] = LEFT;
-                topright.dials[LEFT_DOWN] = DOWN;
-              }
-            }
+          if (zeroLeft) {
+            //zero to left
+            topleft.dials[DIAL_1] = DOWN;
+            bottomleft.dials[DIAL_2] = UP;
           }
-          if (x == 0 || arr[y][x - 1] == "0") {
-            //left
-            topleft.dials[LEFT_DOWN] = DOWN;
-            bottomleft.dials[RIGHT_UP] = UP;
 
-            //corners
-            if (
-              arr[y][x - 1] == "0" &&
-              arr[y - 1] != undefined &&
-              arr[y - 1][x - 1] == "1"
-            ) {
-              topleft.dials[RIGHT_UP] = LEFT;
-            }
+          if (zeroBelow) {
+            //zero below
+            bottomright.dials[DIAL_2] = LEFT;
+            bottomleft.dials[DIAL_1] = RIGHT;
+          }
 
-            if (arr[y - 1] != undefined && arr[y - 1][x] == "0") {
-              topright.dials[RIGHT_UP] = RIGHT;
-            }
+          if (zeroAbove) {
+            //zero above
+            topright.dials[DIAL_1] = LEFT;
+            topleft.dials[DIAL_2] = RIGHT;
           }
         }
       }
