@@ -16,6 +16,9 @@
       import ClockClock from "./clockclock.js";
 
       let clock = new ClockClock({ element: document.querySelector(".clock") });
+      clock.updateSegment(0, 7);
+
+      window.clock = clock;
     </script>
   </body>
 </html>

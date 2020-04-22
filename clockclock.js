@@ -1,25 +1,31 @@
 export default class ClockClock {
-  constructor({ element } = {}) {
+  constructor({ element, segments = 1 } = {}) {
     this.canvas = document.createElement("canvas");
     this.ctx = this.canvas.getContext("2d");
     element.appendChild(this.canvas);
     this.canvas.height = 480;
     this.canvas.width = 320;
 
-    let seg = new Segment();
+    this.segments = [];
+    for (let s = 0; s < segments; s++) {
+      this.segments.push(new Segment());
+    }
 
-    // seg.set("111101101101111"); //0
-    // seg.set("110010010010111"); //1
-    // seg.set("111001111100111"); //2
-    // seg.set("111001111001111"); //3
-    // seg.set("101101111001001"); //4
-    // seg.set("111100111001111"); //5
-    // seg.set("111100111101111"); //6
-    // seg.set("111101001001001"); //7
-    // seg.set("111101111101111"); //8
-    // seg.set("111101111001111"); //9
-
-    seg.draw(this.ctx);
+    this.numbers = [
+      "111101101101111",
+      "110010010010111",
+      "111001111100111",
+      "111001111001111",
+      "101101111001001",
+      "111100111001111",
+      "111100111101111",
+      "111101001001001",
+      "111101111101111",
+      "111101111001111",
+    ];
+  }
+  updateSegment(segment, number) {
+    this.segments[segment].set(this.numbers[number]).draw(this.ctx);
   }
 }
 
@@ -112,6 +118,7 @@ class Segment {
         }
       }
     }
+    return this;
   }
 }
 
