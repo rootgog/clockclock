@@ -7,16 +7,75 @@ export default class ClockClock {
     this.canvas.width = 320;
 
     let seg = new Segment();
-    seg.draw(this.ctx);
 
-    seg.set([
-      [1, 1, 1, 1],
-      [1, 0, 0, 1],
-      [1, 0, 0, 1],
-      [1, 0, 0, 1],
-      [1, 0, 0, 1],
-      [1, 1, 1, 1],
-    ]);
+    let serialised = `
+          1 1 1
+          1 0 1
+          1 0 1 //0
+          1 0 1
+          1 1 1
+
+          1 1 1
+          1 0 1
+          1 1 1 //8
+          1 0 1
+          1 1 1
+
+          1 1 1
+          1 0 0
+          1 1 1 //5
+          0 0 1
+          1 1 1
+
+          1 1 1
+          1 0 1
+          1 1 1 //9
+          0 0 1
+          1 1 1
+          `;
+
+    // seg.set([
+    //   [
+    //     [90, 180],
+    //     [90, 270],
+    //     [90, 270],
+    //     [270, 180],
+    //   ],
+    //   [
+    //     [0, 180],
+    //     [90, 180],
+    //     [270, 180],
+    //     [0, 180],
+    //   ],
+    //   [
+    //     [0, 180],
+    //     [0, 180],
+    //     [0, 180],
+    //     [0, 180],
+    //   ],
+    //   [
+    //     [0, 180],
+    //     [0, 180],
+    //     [0, 180],
+    //     [0, 180],
+    //   ],
+    //   [
+    //     [0, 180],
+    //     [90, 0],
+    //     [0, 270],
+    //     [0, 180],
+    //   ],
+    //   [
+    //     [90, 0],
+    //     [90, 270],
+    //     [90, 270],
+    //     [270, 0],
+    //   ],
+    // ]);
+
+    seg.set("111101101101111");
+
+    seg.draw(this.ctx);
   }
 }
 
@@ -52,14 +111,87 @@ class Segment {
       });
     });
   }
+  set(serialised) {
+    let arr = serialised.match(/.{1,3}/g).map((row) => {
+      return row.match(/.{1}/g);
+    });
+    for (let y = 0; y < arr.length; y++) {
+      const row = arr[y];
+      for (let x = 0; x < row.length; x++) {
+        const cell = row[x];
+        if (cell == "1") {
+          let topleft = this.clocks[y][x];
+          let topright = this.clocks[y][x + 1];
+          let bottomleft = this.clocks[y + 1][x];
+          let bottomright = this.clocks[y + 1][x + 1];
+
+          const DOWN = 180;
+          const UP = 0;
+          const RIGHT = 90;
+          const LEFT = 270;
+
+          //to left or down change dial 2 (index 1)
+          //to up or right change dial 1 (index 0)
+          const LEFT_DOWN = 1;
+          const RIGHT_UP = 0;
+
+          if (y == 0 || (arr[y - 1] != undefined && arr[y - 1][x] == "0")) {
+            //top
+            topleft.dials[RIGHT_UP] = RIGHT;
+            topright.dials[LEFT_DOWN] = LEFT;
+
+            //corners
+            if (y != 0 && arr[y - 1][x] == "0") {
+              //top left
+              topleft.dials[LEFT_DOWN] = UP;
+            }
+          }
+
+          if (
+            arr[y + 1] == undefined ||
+            (arr[y + 1] != undefined && arr[y + 1][x] == "0")
+          ) {
+            //bottom
+            bottomleft.dials[RIGHT_UP] = RIGHT;
+            bottomright.dials[LEFT_DOWN] = LEFT;
+
+            //corners
+            if (x == 0) {
+              //bottom left
+              bottomleft.dials[LEFT_DOWN] = RIGHT;
+            }
+          }
+
+          if (x == 0 || arr[y][x - 1] == "0") {
+            //left
+            topleft.dials[LEFT_DOWN] = DOWN;
+            bottomleft.dials[RIGHT_UP] = UP;
+
+            //corners
+            if (arr[y][x - 1] == "0") {
+              console.log(x, y);
+            }
+          }
+
+          if (arr[y][x + 1] == undefined || arr[y][x + 1] == "0") {
+            //right
+            topright.dials[LEFT_DOWN] = DOWN;
+            bottomright.dials[RIGHT_UP] = UP;
+
+            //corners
+            if (y == 0) {
+              //top left
+              topright.dials[RIGHT_UP] = LEFT;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 class Clock {
-  constructor({
-    pos = { x: 0, y: 0 },
-    raduis = 40,
-    dials = [Math.floor(Math.random() * 360), Math.floor(Math.random() * 360)],
-  } = {}) {
+  constructor({ pos = { x: 0, y: 0 }, raduis = 40, dials = [45, 45] } = {}) {
     this.pos = pos;
     this.raduis = raduis;
     this.dials = dials;
