@@ -17,14 +17,67 @@
 
       let clock = new ClockClock({ element: document.querySelector(".clock") });
       clock.draw();
-      let num = 0;
-      setInterval(() => {
-        num == 9 ? (num = 0) : num++;
-        clock.updateSegment(0, num);
-        console.log("setting to ", num);
-      }, 5000);
 
-      window.clock = clock;
+      clock.addSegment({ name: "hoursTens", pos: { x: 0, y: 0 } });
+      clock.addSegment({ name: "hoursUnits", pos: { x: 160, y: 0 } });
+
+      clock.addSegment({ name: "minsTens", pos: { x: 0, y: 240 } });
+      clock.addSegment({ name: "minsUnits", pos: { x: 160, y: 240 } });
+
+      clock.addSegment({
+        name: "secondsTens",
+        radius: 5,
+        pos: { x: 320, y: 420 },
+      });
+      clock.addSegment({
+        name: "secondsUnits",
+        radius: 5,
+        pos: { x: 360, y: 420 },
+      });
+
+      let secondsUnits = 0;
+      let secondsTens = 0;
+      let minsUnits = 0;
+      let minsTens = 0;
+      let hoursUnits = 2;
+      let hoursTens = 1;
+
+      clock.updateSegment("secondsUnits", secondsUnits);
+      clock.updateSegment("secondsTens", secondsTens);
+      clock.updateSegment("minsUnits", minsUnits);
+      clock.updateSegment("minsTens", minsTens);
+      clock.updateSegment("hoursUnits", hoursUnits);
+      clock.updateSegment("hoursTens", hoursTens);
+
+      setInterval(() => {
+        if (secondsUnits == 9) {
+          secondsUnits = 0;
+
+          if (secondsTens == 5) {
+            secondsTens = 0;
+
+            if (minsUnits == 9) {
+              minsUnits = 0;
+
+              if (minsTens == 5) {
+                minsTens = 0;
+              } else {
+                minsTens++;
+              }
+              clock.updateSegment("minsTens", minsTens);
+            } else {
+              minsUnits++;
+            }
+            clock.updateSegment("minsUnits", minsUnits);
+          } else {
+            secondsTens++;
+          }
+          clock.updateSegment("secondsTens", secondsTens);
+        } else {
+          secondsUnits++;
+        }
+        clock.updateSegment("secondsUnits", secondsUnits);
+      }, 1000);
     </script>
   </body>
 </html>
