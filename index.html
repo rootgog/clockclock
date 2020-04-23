@@ -19,7 +19,7 @@
   <body>
     <div class="info">
       <p>
-        Clock Clock based on
+        Clock Clock inspired by
         <a
           href="https://www.reddit.com/r/DidntKnowIWantedThat/comments/g4fzhm"
           target="_blank"
@@ -59,18 +59,29 @@
         pos: { x: 360, y: 420 },
       });
 
-      setInterval(() => {
-        let now = new Date();
+      let focused = true;
 
-        let secs = ("0" + now.getSeconds()).slice(-2);
-        let mins = ("0" + now.getMinutes()).slice(-2);
-        let hours = ("0" + now.getHours()).slice(-2);
-        clock.updateSegment("secondsUnits", secs[1]);
-        clock.updateSegment("secondsTens", secs[0]);
-        clock.updateSegment("minsUnits", mins[1]);
-        clock.updateSegment("minsTens", mins[0]);
-        clock.updateSegment("hoursUnits", hours[1]);
-        clock.updateSegment("hoursTens", hours[0]);
+      window.onfocus = function () {
+        focused = true;
+      };
+      window.onblur = function () {
+        focused = false;
+      };
+
+      setInterval(() => {
+        if (focused) {
+          let now = new Date();
+
+          let secs = ("0" + now.getSeconds()).slice(-2);
+          let mins = ("0" + now.getMinutes()).slice(-2);
+          let hours = ("0" + now.getHours()).slice(-2);
+          clock.updateSegment("secondsUnits", secs[1]);
+          clock.updateSegment("secondsTens", secs[0]);
+          clock.updateSegment("minsUnits", mins[1]);
+          clock.updateSegment("minsTens", mins[0]);
+          clock.updateSegment("hoursUnits", hours[1]);
+          clock.updateSegment("hoursTens", hours[0]);
+        }
       }, 20);
     </script>
   </body>
