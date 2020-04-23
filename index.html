@@ -16,7 +16,13 @@
       import ClockClock from "./clockclock.js";
 
       let clock = new ClockClock({ element: document.querySelector(".clock") });
-      clock.updateSegment(0, 7);
+      clock.draw();
+      let num = 0;
+      setInterval(() => {
+        num == 9 ? (num = 0) : num++;
+        clock.updateSegment(0, num);
+        console.log("setting to ", num);
+      }, 5000);
 
       window.clock = clock;
     </script>

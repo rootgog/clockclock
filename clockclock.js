@@ -1,10 +1,11 @@
 export default class ClockClock {
-  constructor({ element, segments = 1 } = {}) {
+  constructor({ element, segments = 1, updateRate = 30 } = {}) {
     this.canvas = document.createElement("canvas");
     this.ctx = this.canvas.getContext("2d");
     element.appendChild(this.canvas);
     this.canvas.height = 480;
     this.canvas.width = 320;
+    this.updateRate = updateRate;
 
     this.segments = [];
     for (let s = 0; s < segments; s++) {
@@ -25,7 +26,16 @@ export default class ClockClock {
     ];
   }
   updateSegment(segment, number) {
-    this.segments[segment].set(this.numbers[number]).draw(this.ctx);
+    this.segments[segment].set(this.numbers[number]);
+    return this;
+  }
+
+  draw() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.segments.forEach((segment) => {
+      segment.draw(this.ctx);
+    });
+    requestAnimationFrame(this.draw.bind(this));
   }
 }
 
@@ -61,6 +71,7 @@ class Segment {
       });
     });
   }
+
   set(serialised) {
     let arr = serialised.match(/.{1,3}/g).map((row) => {
       return row.match(/.{1}/g);
@@ -88,6 +99,31 @@ class Segment {
             if (arr[y][x] != "1") return true;
           }
 
+          function animateValue(value, index, to, time = 2) {
+            let updateRate = 30;
+
+            //need diff
+            let diff = to - value[index];
+            while (diff < -180) diff += 360;
+            while (diff > 180) diff -= 360;
+            if (diff == 0) {
+              diff = 360;
+            }
+
+            let step = diff / time / (1000 / updateRate);
+
+            let currentProgress = value[index];
+
+            let interval = setInterval(() => {
+              currentProgress += step;
+              value[index] += step;
+              if (currentProgress > diff) {
+                value[index] = to;
+                clearInterval(interval);
+              }
+            }, 1000 / updateRate);
+          }
+
           const zeroAbove = isZeroVal(x, y - 1);
           const zeroBelow = isZeroVal(x, y + 1);
           const zeroRight = isZeroVal(x + 1, y);
@@ -95,25 +131,25 @@ class Segment {
 
           if (zeroRight) {
             //zero to right
-            topright.dials[DIAL_2] = DOWN;
-            bottomright.dials[DIAL_1] = UP;
+            animateValue(topright.dials, DIAL_2, DOWN);
+            animateValue(bottomright.dials, DIAL_1, UP);
           }
           if (zeroLeft) {
             //zero to left
-            topleft.dials[DIAL_1] = DOWN;
-            bottomleft.dials[DIAL_2] = UP;
+            animateValue(topleft.dials, DIAL_1, DOWN);
+            animateValue(bottomleft.dials, DIAL_2, UP);
           }
 
           if (zeroBelow) {
             //zero below
-            bottomright.dials[DIAL_2] = LEFT;
-            bottomleft.dials[DIAL_1] = RIGHT;
+            animateValue(bottomright.dials, DIAL_2, LEFT);
+            animateValue(bottomleft.dials, DIAL_1, RIGHT);
           }
 
           if (zeroAbove) {
             //zero above
-            topright.dials[DIAL_1] = LEFT;
-            topleft.dials[DIAL_2] = RIGHT;
+            animateValue(topright.dials, DIAL_1, LEFT);
+            animateValue(topleft.dials, DIAL_2, RIGHT);
           }
         }
       }
