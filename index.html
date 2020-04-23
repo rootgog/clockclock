@@ -8,15 +8,33 @@
       .clock {
         width: 400px;
         height: 480px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        margin: 0 auto;
         box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
+      }
+      .info {
+        text-align: center;
       }
     </style>
   </head>
   <body>
+    <div class="info">
+      <p>
+        Clock Clock based on
+        <a
+          href="https://www.reddit.com/r/DidntKnowIWantedThat/comments/g4fzhm"
+          target="_blank"
+          >this reddit post</a
+        >
+      </p>
+      <p>
+        By, <a href="https://georgebishop.me" target="_blank">George Bishop</a>
+      </p>
+      <p>
+        <a href="https://github.com/rootgog/clockclock" target="_blank"
+          >View the code on Github</a
+        >
+      </p>
+    </div>
     <div class="clock"></div>
     <script type="module">
       import ClockClock from "./clockclock.js";
