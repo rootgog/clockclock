@@ -1,10 +1,10 @@
 export default class ClockClock {
-  constructor({ element, updateRate = 30 } = {}) {
+  constructor({ element, updateRate = 30, height, width } = {}) {
     this.canvas = document.createElement("canvas");
     this.ctx = this.canvas.getContext("2d");
     element.appendChild(this.canvas);
-    this.canvas.height = 1000;
-    this.canvas.width = 1000;
+    this.canvas.height = height ? height : element.offsetHeight;
+    this.canvas.width = width ? width : element.offsetWidth;
     this.updateRate = updateRate;
 
     this.segments = {};
@@ -29,6 +29,10 @@ export default class ClockClock {
     if (!this.segments.hasOwnProperty(name)) {
       throw new Error("segment does not exist");
     }
+    if (this.segments[name].current == number) {
+      return;
+    }
+    this.segments[name].current = number;
     this.segments[name].set(this.numbers[number]);
     return this;
   }
@@ -50,7 +54,7 @@ class Segment {
     this.radius = radius;
     this.pos = pos;
     this.clocks = [];
-
+    this.current;
     //create seg array
 
     for (let y = 0; y < 6; y++) {
